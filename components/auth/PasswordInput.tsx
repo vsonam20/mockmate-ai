@@ -3,7 +3,15 @@
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 
-export default function PasswordInput() {
+interface Props {
+  value: string;
+  onChange: (value: string) => void;
+}
+
+export default function PasswordInput({
+  value,
+  onChange,
+}: Props) {
   const [show, setShow] = useState(false);
 
   return (
@@ -16,6 +24,8 @@ export default function PasswordInput() {
         <input
           type={show ? "text" : "password"}
           placeholder="Enter your password"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
           className="
             w-full
             rounded-2xl

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import AuthLayout from "@/components/auth/AuthLayout";
 import AuthCard from "@/components/auth/AuthCard";
@@ -9,6 +10,8 @@ import GoogleButton from "@/components/auth/GoogleButton";
 import Divider from "@/components/auth/Divider";
 
 export default function SignInPage() {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
   return (
     <AuthLayout>
       <AuthCard>
@@ -41,9 +44,14 @@ export default function SignInPage() {
             label="Email"
             type="email"
             placeholder="Enter your email"
+            value={email}
+            onChange={setEmail}
           />
 
-          <PasswordInput />
+          <PasswordInput
+           value={password}
+           onChange={setPassword}
+          />
 
           <div className="flex justify-end">
 
