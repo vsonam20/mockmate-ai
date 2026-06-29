@@ -4,28 +4,30 @@ import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 
 interface Props {
-  value: string;
-  onChange: (value: string) => void;
+  name: string;
+  label?: string;
+  placeholder?: string;
 }
 
 export default function PasswordInput({
-  value,
-  onChange,
+  name,
+  label = "Password",
+  placeholder = "Enter your password",
 }: Props) {
   const [show, setShow] = useState(false);
 
   return (
     <div className="space-y-2">
       <label className="text-sm font-medium text-zinc-300">
-        Password
+        {label}
       </label>
 
       <div className="relative">
         <input
+          name={name}
           type={show ? "text" : "password"}
-          placeholder="Enter your password"
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          required
           className="
             w-full
             rounded-2xl

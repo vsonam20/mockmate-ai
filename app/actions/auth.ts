@@ -20,6 +20,7 @@ export async function signUp(formData: FormData) {
   if (!parsed.success) {
     return {
       success: false,
+      message: "Validation failed.",
       errors: parsed.error.flatten().fieldErrors,
     };
   }
@@ -41,7 +42,10 @@ export async function signUp(formData: FormData) {
     };
   }
 
-  redirect("/dashboard");
+  return {
+    success: true,
+    message: "Account created successfully.",
+  };
 }
 
 export async function signIn(formData: FormData) {

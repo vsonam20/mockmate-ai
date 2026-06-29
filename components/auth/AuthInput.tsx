@@ -1,19 +1,19 @@
 "use client";
 
 interface Props {
+  name: string;
   label: string;
   type?: string;
   placeholder?: string;
-  value: string;
-  onChange: (value: string) => void;
+  defaultValue?: string;
 }
 
 export default function AuthInput({
+  name,
   label,
   type = "text",
   placeholder,
-  value,
-  onChange,
+  defaultValue,
 }: Props) {
   return (
     <div className="space-y-2">
@@ -22,10 +22,11 @@ export default function AuthInput({
       </label>
 
       <input
+        name={name}
         type={type}
         placeholder={placeholder}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
+        defaultValue={defaultValue}
+        required
         className="
           w-full
           rounded-2xl
