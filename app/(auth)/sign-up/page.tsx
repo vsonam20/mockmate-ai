@@ -1,7 +1,8 @@
-"use client";
+
 
 import Link from "next/link";
 
+import { signUp } from "@/app/actions/auth";
 import AuthLayout from "@/components/auth/AuthLayout";
 import AuthCard from "@/components/auth/AuthCard";
 import AuthInput from "@/components/auth/AuthInput";
@@ -30,7 +31,7 @@ export default function SignUpPage() {
           </p>
         </div>
 
-        <div className="space-y-6">
+        <form action={signUp} className="space-y-6">
           <AuthInput
             name="name"
             label="Full Name"
@@ -60,6 +61,7 @@ export default function SignUpPage() {
           />
 
           <button
+            type="submit"
             className="
               w-full
               rounded-2xl
@@ -90,7 +92,7 @@ export default function SignUpPage() {
               Sign In
             </Link>
           </p>
-        </div>
+        </form>
       </AuthCard>
     </AuthLayout>
   );

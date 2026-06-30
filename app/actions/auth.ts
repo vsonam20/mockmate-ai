@@ -2,9 +2,9 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { signUpSchema, signInSchema } from "@/lib/auth/schemas";
+import { signInSchema, signUpSchema } from "@/lib/auth/schemas";
 
-export async function signUp(formData: FormData) {
+export async function signUp(formData: FormData): Promise<void> {
   const supabase = await createClient();
 
   const values = {
@@ -14,15 +14,12 @@ export async function signUp(formData: FormData) {
     confirmPassword:
       formData.get("confirmPassword")?.toString() ?? "",
   };
+  console.log("Form Values:", values);
 
   const parsed = signUpSchema.safeParse(values);
 
   if (!parsed.success) {
-    return {
-      success: false,
-      message: "Validation failed.",
-      errors: parsed.error.flatten().fieldErrors,
-    };
+    throw new Error("Validation failed.");
   }
 
   const { error } = await supabase.auth.signUp({
@@ -36,19 +33,13 @@ export async function signUp(formData: FormData) {
   });
 
   if (error) {
-    return {
-      success: false,
-      message: error.message,
-    };
+    throw new Error(error.message);
   }
 
-  return {
-    success: true,
-    message: "Account created successfully.",
-  };
+  redirect("/dashboard");
 }
 
-export async function signIn(formData: FormData) {
+export async function signIn(formData: FormData): Promise<void> {
   const supabase = await createClient();
 
   const values = {
@@ -59,10 +50,7 @@ export async function signIn(formData: FormData) {
   const parsed = signInSchema.safeParse(values);
 
   if (!parsed.success) {
-    return {
-      success: false,
-      errors: parsed.error.flatten().fieldErrors,
-    };
+    throw new Error("Validation failed.");
   }
 
   const { error } = await supabase.auth.signInWithPassword({
@@ -71,10 +59,7 @@ export async function signIn(formData: FormData) {
   });
 
   if (error) {
-    return {
-      success: false,
-      message: error.message,
-    };
+    throw new Error(error.message);
   }
 
   redirect("/dashboard");
@@ -83,7 +68,11 @@ export async function signIn(formData: FormData) {
 export async function signOut() {
   const supabase = await createClient();
 
-  await supabase.auth.signOut();
+  const { error } = await supabase.auth.signOut();
+
+  if (error) {
+    throw new Error(error.message);
+  }
 
   redirect("/");
 }

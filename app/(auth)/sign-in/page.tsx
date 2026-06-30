@@ -1,6 +1,6 @@
-"use client";
-
 import Link from "next/link";
+
+import { signIn } from "@/app/actions/auth";
 import AuthLayout from "@/components/auth/AuthLayout";
 import AuthCard from "@/components/auth/AuthCard";
 import AuthInput from "@/components/auth/AuthInput";
@@ -9,17 +9,14 @@ import GoogleButton from "@/components/auth/GoogleButton";
 import Divider from "@/components/auth/Divider";
 
 export default function SignInPage() {
-    
   return (
     <AuthLayout>
       <AuthCard>
-
         {/* Logo */}
 
         <div className="mb-8 text-center">
-
           <Link href="/">
-            <h1 className="text-4xl font-black tracking-tight text-white cursor-pointer">
+            <h1 className="cursor-pointer text-4xl font-black tracking-tight text-white">
               Mock<span className="text-pink-500">Mate</span>AI
             </h1>
           </Link>
@@ -31,37 +28,33 @@ export default function SignInPage() {
           <p className="mt-3 text-zinc-400">
             Sign in to continue your interview preparation.
           </p>
-
         </div>
 
         {/* Form */}
 
-        <div className="space-y-6">
-
+        <form action={signIn} className="space-y-6">
           <AuthInput
             name="email"
             label="Email"
             type="email"
             placeholder="Enter your email"
-            
           />
 
           <PasswordInput
-           name="password"
+            name="password"
           />
 
           <div className="flex justify-end">
-
             <Link
               href="/forgot-password"
               className="text-sm text-pink-400 hover:text-pink-300"
             >
               Forgot Password?
             </Link>
-
           </div>
 
           <button
+            type="submit"
             className="
               w-full
               rounded-2xl
@@ -84,20 +77,15 @@ export default function SignInPage() {
           <GoogleButton />
 
           <p className="text-center text-zinc-400">
-
             Don't have an account?{" "}
-
             <Link
               href="/sign-up"
               className="font-semibold text-pink-400"
             >
               Sign Up
             </Link>
-
           </p>
-
-        </div>
-
+        </form>
       </AuthCard>
     </AuthLayout>
   );
