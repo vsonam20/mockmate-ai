@@ -1,17 +1,9 @@
-import { generateInterviewAction } from "@/app/actions/interview";
+import InterviewSession from "@/components/interview/session/InterviewSession";
 
-export default async function SessionPage() {
-  const interview = await generateInterviewAction({
-    role: "AI/ML Engineer",
-    experience: "Fresher",
-    type: "Technical",
-    difficulty: "Medium",
-    questions: 5,
-  });
-
+export default function SessionPage() {
   return (
-    <pre className="p-8 text-white whitespace-pre-wrap">
-      {JSON.stringify(interview, null, 2)}
-    </pre>
+    <main className="mx-auto max-w-7xl px-6 py-10">
+      <InterviewSession />
+    </main>
   );
 }

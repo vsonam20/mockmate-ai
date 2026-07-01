@@ -10,6 +10,7 @@ import {
   questionCounts,
 } from "@/lib/interview/options";
 
+import GenerateButton from "./GenerateButton";
 import OptionSelector from "./ui/OptionSelector";
 import SectionTitle from "./ui/SectionTitle";
 import StepBadge from "./ui/StepBadge";
@@ -182,26 +183,9 @@ export default function InterviewSetup() {
 
       <section className="flex justify-center pt-6">
 
-        <button
-          className="
-            rounded-2xl
-            bg-gradient-to-r
-            from-pink-500
-            to-fuchsia-500
-            px-12
-            py-5
-            text-lg
-            font-semibold
-            text-white
-            transition-all
-            duration-300
-            hover:scale-105
-            hover:shadow-2xl
-            hover:shadow-pink-500/30
-          "
-        >
-          🚀 Generate Interview
-        </button>
+        <GenerateButton
+          config={interviewConfig}
+        />
 
       </section>
 

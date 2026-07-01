@@ -1,17 +1,10 @@
-
-
 import Link from "next/link";
 
-import { signUp } from "@/app/actions/auth";
 import AuthLayout from "@/components/auth/AuthLayout";
 import AuthCard from "@/components/auth/AuthCard";
-import AuthInput from "@/components/auth/AuthInput";
-import PasswordInput from "@/components/auth/PasswordInput";
-import GoogleButton from "@/components/auth/GoogleButton";
-import Divider from "@/components/auth/Divider";
+import SignUpForm from "@/components/auth/SignUpForm";
 
 export default function SignUpPage() {
-
   return (
     <AuthLayout>
       <AuthCard>
@@ -31,68 +24,7 @@ export default function SignUpPage() {
           </p>
         </div>
 
-        <form action={signUp} className="space-y-6">
-          <AuthInput
-            name="name"
-            label="Full Name"
-            placeholder="Enter your full name"
-    
-          />
-
-          <AuthInput
-            name="email"
-            label="Email"
-            type="email"
-            placeholder="Enter your email"
-        
-          />
-
-          <PasswordInput
-            name="password"
-            label="Password"
-        
-          />
-
-          <PasswordInput
-            name="confirmPassword"
-            label="Confirm Password"
-            placeholder="Re-enter your password"
-        
-          />
-
-          <button
-            type="submit"
-            className="
-              w-full
-              rounded-2xl
-              bg-gradient-to-r
-              from-pink-500
-              to-rose-500
-              py-4
-              font-semibold
-              text-white
-              transition
-              hover:scale-[1.02]
-              hover:shadow-[0_0_35px_rgba(255,60,140,.4)]
-            "
-          >
-            Create Account
-          </button>
-
-          <Divider />
-
-          <GoogleButton />
-
-          <p className="text-center text-zinc-400">
-            Already have an account?{" "}
-            <Link
-              href="/sign-in"
-              className="font-semibold text-pink-400"
-            >
-              Sign In
-            </Link>
-          </p>
-        </form>
+        <SignUpForm />
       </AuthCard>
     </AuthLayout>
   );

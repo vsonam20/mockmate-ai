@@ -1,10 +1,17 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
-import { signInSchema, signUpSchema } from "@/lib/auth/schemas";
 
-export async function signUp(formData: FormData): Promise<void> {
+import { createClient } from "@/lib/supabase/server";
+import {
+  signInSchema,
+  signUpSchema,
+} from "@/lib/auth/schemas";
+
+export async function signUp(
+  _: { success: boolean; message: string },
+  formData: FormData
+): Promise<{ success: boolean; message: string }> {
   const supabase = await createClient();
 
   const values = {
@@ -14,12 +21,15 @@ export async function signUp(formData: FormData): Promise<void> {
     confirmPassword:
       formData.get("confirmPassword")?.toString() ?? "",
   };
-  console.log("Form Values:", values);
 
   const parsed = signUpSchema.safeParse(values);
 
   if (!parsed.success) {
-    throw new Error("Validation failed.");
+    return {
+      success: false,
+      message:
+        parsed.error.issues[0]?.message ?? "Validation failed.",
+    };
   }
 
   const { error } = await supabase.auth.signUp({
@@ -33,13 +43,19 @@ export async function signUp(formData: FormData): Promise<void> {
   });
 
   if (error) {
-    throw new Error(error.message);
+    return {
+      success: false,
+      message: error.message,
+    };
   }
 
   redirect("/dashboard");
 }
 
-export async function signIn(formData: FormData): Promise<void> {
+export async function signIn(
+  _: { success: boolean; message: string },
+  formData: FormData
+): Promise<{ success: boolean; message: string }> {
   const supabase = await createClient();
 
   const values = {
@@ -50,7 +66,11 @@ export async function signIn(formData: FormData): Promise<void> {
   const parsed = signInSchema.safeParse(values);
 
   if (!parsed.success) {
-    throw new Error("Validation failed.");
+    return {
+      success: false,
+      message:
+        parsed.error.issues[0]?.message ?? "Validation failed.",
+    };
   }
 
   const { error } = await supabase.auth.signInWithPassword({
@@ -59,7 +79,10 @@ export async function signIn(formData: FormData): Promise<void> {
   });
 
   if (error) {
-    throw new Error(error.message);
+    return {
+      success: false,
+      message: error.message,
+    };
   }
 
   redirect("/dashboard");
@@ -71,7 +94,7 @@ export async function signOut() {
   const { error } = await supabase.auth.signOut();
 
   if (error) {
-    throw new Error(error.message);
+    return;
   }
 
   redirect("/");
