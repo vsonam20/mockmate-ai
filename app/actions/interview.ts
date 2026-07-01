@@ -40,6 +40,7 @@ export async function generateInterviewAction(
       difficulty: data.difficulty.toLowerCase(),
       total_questions: data.questions,
       status: "in_progress",
+      
     })
     .select("id")
     .single();
@@ -65,5 +66,6 @@ export async function generateInterviewAction(
 
   return {
     interviewId: interviewRow.id,
+    interview,
   };
 }

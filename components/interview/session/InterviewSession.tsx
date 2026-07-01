@@ -2,56 +2,90 @@
 
 import { useState } from "react";
 
+import { saveAnswerAction } from "@/app/actions/answers";
+
 import ProgressBar from "./ProgressBar";
 import QuestionCard from "./QuestionCard";
 import TranscriptBox from "./TranscriptBox";
 import RecordingPanel from "./RecordingPanel";
 import NavigationButtons from "./NavigationButtons";
-import { demoQuestions } from "@/lib/interview/demoQuestions";
 
-export default function InterviewSession() {
-  const questions = demoQuestions;
+interface Question {
+  id: string;
+  question: string;
+  question_number: number;
+}
 
+interface Props {
+  interviewId: string;
+  questions: Question[];
+}
+
+export default function InterviewSession({
+  interviewId,
+  questions,
+}: Props) {
   const [currentQuestion, setCurrentQuestion] = useState(0);
+
   const [answers, setAnswers] = useState<string[]>(
     new Array(questions.length).fill("")
   );
+
   const [isRecording, setIsRecording] = useState(false);
 
-  const nextQuestion = () => {
-    if (currentQuestion < questions.length - 1) {
-      setCurrentQuestion(currentQuestion + 1);
-    }
-  };
+  const [saving, setSaving] = useState(false);
 
-  const previousQuestion = () => {
-    if (currentQuestion > 0) {
-      setCurrentQuestion(currentQuestion - 1);
+  async function nextQuestion() {
+    try {
+      setSaving(true);
+
+      await saveAnswerAction({
+        interviewId,
+        questionId: questions[currentQuestion].id,
+        answer: answers[currentQuestion],
+        duration: 0,
+      });
+
+      if (currentQuestion < questions.length - 1) {
+        setCurrentQuestion((prev) => prev + 1);
+      } else {
+        alert("🎉 Interview Completed!");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Failed to save answer.");
+    } finally {
+      setSaving(false);
     }
-  };
+  }
+
+  function previousQuestion() {
+    if (currentQuestion > 0) {
+      setCurrentQuestion((prev) => prev - 1);
+    }
+  }
 
   return (
     <div className="mx-auto max-w-6xl space-y-8">
-
       <ProgressBar
         current={currentQuestion + 1}
         total={questions.length}
       />
 
       <QuestionCard
-        question={questions[currentQuestion]}
+        question={questions[currentQuestion].question}
         index={currentQuestion + 1}
         total={questions.length}
       />
 
-        <TranscriptBox
+      <TranscriptBox
         value={answers[currentQuestion]}
         onChange={(value) => {
-            const updated = [...answers];
-            updated[currentQuestion] = value;
-            setAnswers(updated);
+          const updated = [...answers];
+          updated[currentQuestion] = value;
+          setAnswers(updated);
         }}
-        />
+      />
 
       <RecordingPanel
         isRecording={isRecording}
@@ -61,7 +95,7 @@ export default function InterviewSession() {
       <NavigationButtons
         onPrevious={previousQuestion}
         onNext={nextQuestion}
-        disablePrevious={currentQuestion === 0}
+        disablePrevious={currentQuestion === 0 || saving}
         isLast={currentQuestion === questions.length - 1}
       />
     </div>
