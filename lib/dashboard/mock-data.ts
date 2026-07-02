@@ -6,6 +6,7 @@ import {
   Mic,
   FileSearch,
   ChartColumn,
+  History,
 } from "lucide-react";
 
 export const dashboardStats = [
@@ -41,6 +42,13 @@ export const quickActions = [
     description: "Practice with AI-powered interview questions.",
     href: "/dashboard/interview",
     icon: Mic,
+  },
+  {
+    title: "Interview History",
+    description:
+      "View all your completed interviews and AI feedback.",
+    href: "/dashboard/interview/history",
+    icon: History,
   },
   {
     title: "Analyze Resume",
