@@ -38,3 +38,40 @@ Do not use code fences.
 Do not add explanations.
 `;
 }
+
+export function buildEvaluationPrompt(
+  questions: {
+    question: string;
+    answer: string;
+  }[]
+) {
+  return `
+You are a senior technical interviewer.
+
+Evaluate each answer individually.
+
+Return ONLY valid JSON.
+
+Format:
+
+{
+  "overallScore": 85,
+  "overallFeedback": "...",
+  "answers": [
+    {
+      "question": "...",
+      "score": 90,
+      "feedback": "..."
+    }
+  ]
+}
+
+Questions & Answers:
+
+${JSON.stringify(questions, null, 2)}
+
+Do not return markdown.
+Do not use code fences.
+Do not explain anything.
+`;
+}

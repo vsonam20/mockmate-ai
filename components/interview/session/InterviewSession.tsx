@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 import { saveAnswerAction } from "@/app/actions/answers";
+import { finishInterviewAction } from "@/app/actions/finishInterview";
 
 import ProgressBar from "./ProgressBar";
 import QuestionCard from "./QuestionCard";
@@ -25,6 +27,8 @@ export default function InterviewSession({
   interviewId,
   questions,
 }: Props) {
+  const router = useRouter();
+
   const [currentQuestion, setCurrentQuestion] = useState(0);
 
   const [answers, setAnswers] = useState<string[]>(
@@ -39,6 +43,7 @@ export default function InterviewSession({
     try {
       setSaving(true);
 
+      // Save current answer
       await saveAnswerAction({
         interviewId,
         questionId: questions[currentQuestion].id,
@@ -46,14 +51,21 @@ export default function InterviewSession({
         duration: 0,
       });
 
+      // Go to next question
       if (currentQuestion < questions.length - 1) {
         setCurrentQuestion((prev) => prev + 1);
-      } else {
-        alert("🎉 Interview Completed!");
+        return;
       }
+
+      // Last question → Finish interview
+      await finishInterviewAction(interviewId);
+
+      router.push(
+        `/dashboard/interview/feedback?id=${interviewId}`
+      );
     } catch (error) {
       console.error(error);
-      alert("Failed to save answer.");
+      alert("Failed to finish interview.");
     } finally {
       setSaving(false);
     }
