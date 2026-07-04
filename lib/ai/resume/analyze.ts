@@ -1,30 +1,37 @@
-import { ai } from "@/lib/ai/client";
+import { extractResumeText } from "./parser";
+import { cleanResumeText } from "./cleaner";
+import { generateResumeAnalysis } from "./generate";
 
-import { buildResumePrompt } from "./prompt";
-import { ResumeAnalysisSchema } from "./types";
+interface AnalyzeResumeInput {
+  file: File;
+  role?: string;
+  targetCompany?: string;
+  techStack?: string;
+}
 
-export async function analyzeResume(
-  resumeText: string
-) {
-  const response =
-    await ai.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: buildResumePrompt(resumeText),
-    });
+export async function analyzeResume({
+  file,
+  role,
+  targetCompany,
+  techStack,
+}: AnalyzeResumeInput) {
+  const extractedText = await extractResumeText(file);
 
-  const text = response.text?.trim();
+  const cleanedText = cleanResumeText(extractedText);
 
-  if (!text) {
-    throw new Error("Gemini returned empty response.");
+  if (!cleanedText) {
+    throw new Error("Unable to extract resume text.");
   }
 
-  let parsed;
+  const analysis = await generateResumeAnalysis({
+    resumeText: cleanedText,
+    role,
+    targetCompany,
+    techStack,
+  });
 
-  try {
-    parsed = JSON.parse(text);
-  } catch {
-    throw new Error("Gemini returned invalid JSON.");
-  }
-
-  return ResumeAnalysisSchema.parse(parsed);
+  return {
+    extractedText: cleanedText,
+    analysis,
+  };
 }

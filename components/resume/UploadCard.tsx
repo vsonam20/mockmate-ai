@@ -1,13 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import { UploadCloud, Loader2 } from "lucide-react";
+import { Loader2, UploadCloud } from "lucide-react";
 
 import { uploadResumeAction } from "@/app/actions/resume";
 
 export default function UploadCard() {
   const [loading, setLoading] = useState(false);
-  const [resumeText, setResumeText] = useState("");
+
+  const [role, setRole] = useState("");
+  const [targetCompany, setTargetCompany] = useState("");
+  const [techStack, setTechStack] = useState("");
+
+  const [analysis, setAnalysis] = useState<any>(null);
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
 
   async function handleUpload(
     e: React.ChangeEvent<HTMLInputElement>
@@ -16,18 +23,48 @@ export default function UploadCard() {
 
     if (!file) return;
 
+    setMessage("");
+    setError("");
+
+    if (!role.trim()) {
+      setError("Please enter your desired role.");
+      return;
+    }
+
+    const allowedTypes = [
+      "application/pdf",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ];
+
+    if (!allowedTypes.includes(file.type)) {
+      setError("Only PDF and DOCX files are allowed.");
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      setError("File size must be less than 10 MB.");
+      return;
+    }
+
     try {
       setLoading(true);
 
       const formData = new FormData();
       formData.append("resume", file);
 
-      const result = await uploadResumeAction(formData);
+      const result = await uploadResumeAction({
+        formData,
+        role,
+        targetCompany,
+        techStack,
+      });
 
-      setResumeText(result.text);
-    } catch (error) {
-      console.error(error);
-      alert("Failed to extract resume.");
+      setAnalysis(result.analysis);
+
+      setMessage("Resume analyzed successfully!");
+    } catch (err) {
+      console.error(err);
+      setError("Failed to analyze resume.");
     } finally {
       setLoading(false);
     }
@@ -35,63 +72,212 @@ export default function UploadCard() {
 
   return (
     <div className="space-y-8">
-      <div
-        className="
-          rounded-3xl
-          border
-          border-dashed
-          border-pink-500/30
-          bg-white/[0.04]
-          p-16
-          text-center
-        "
-      >
-        <div className="flex justify-center">
-          <div className="rounded-full bg-pink-500/10 p-6">
-            <UploadCloud
-              size={42}
-              className="text-pink-400"
-            />
-          </div>
-        </div>
 
-        <h2 className="mt-8 text-2xl font-bold text-white">
-          Upload Resume
+      <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-8">
+
+        <h2 className="mb-6 text-3xl font-bold text-white">
+          Resume Analyzer
         </h2>
 
-        <p className="mt-4 text-zinc-400">
-          Supported formats:
-          <span className="text-white"> PDF</span> and
-          <span className="text-white"> DOCX</span>
-        </p>
+        <div className="space-y-4">
 
-        <input
-          type="file"
-          accept=".pdf,.docx"
-          onChange={handleUpload}
-          disabled={loading}
-          className="mt-8 block w-full rounded-xl border border-white/10 bg-black/20 p-4 text-white file:mr-4 file:rounded-xl file:border-0 file:bg-pink-500 file:px-5 file:py-2 file:text-white hover:file:bg-pink-600"
-        />
+          <input
+            type="text"
+            placeholder="Desired Role (AI/ML Engineer)"
+            value={role}
+            onChange={(e) => setRole(e.target.value)}
+            className="w-full rounded-xl border border-white/10 bg-black/20 p-4 text-white"
+          />
+
+          <input
+            type="text"
+            placeholder="Target Company (Optional)"
+            value={targetCompany}
+            onChange={(e) =>
+              setTargetCompany(e.target.value)
+            }
+            className="w-full rounded-xl border border-white/10 bg-black/20 p-4 text-white"
+          />
+
+          <input
+            type="text"
+            placeholder="Tech Stack (Python, React, TensorFlow...)"
+            value={techStack}
+            onChange={(e) =>
+              setTechStack(e.target.value)
+            }
+            className="w-full rounded-xl border border-white/10 bg-black/20 p-4 text-white"
+          />
+
+        </div>
+
+        <div className="mt-8 rounded-3xl border border-dashed border-pink-500/30 p-10 text-center">
+
+          <div className="flex justify-center">
+            <div className="rounded-full bg-pink-500/10 p-6">
+              <UploadCloud
+                className="text-pink-400"
+                size={42}
+              />
+            </div>
+          </div>
+
+          <p className="mt-6 text-zinc-400">
+            Upload your Resume (PDF or DOCX)
+          </p>
+
+          <input
+            type="file"
+            accept=".pdf,.docx"
+            disabled={loading}
+            onChange={handleUpload}
+            className="mt-8 block w-full rounded-xl border border-white/10 bg-black/20 p-4 text-white file:mr-4 file:rounded-xl file:border-0 file:bg-pink-500 file:px-5 file:py-2 file:text-white hover:file:bg-pink-600"
+          />
+
+        </div>
 
         {loading && (
           <div className="mt-6 flex items-center justify-center gap-3 text-pink-400">
             <Loader2 className="animate-spin" size={20} />
-            Extracting resume...
+            Analyzing Resume...
           </div>
         )}
+
+        {message && (
+          <div className="mt-6 rounded-xl border border-green-500/20 bg-green-500/10 p-4 text-green-400">
+            {message}
+          </div>
+        )}
+
+        {error && (
+          <div className="mt-6 rounded-xl border border-red-500/20 bg-red-500/10 p-4 text-red-400">
+            {error}
+          </div>
+        )}
+
       </div>
 
-      {resumeText && (
-        <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-8">
-          <h3 className="mb-5 text-2xl font-bold text-white">
-            Extracted Resume Text
-          </h3>
+{analysis && (
+  <div className="space-y-6">
 
-          <pre className="max-h-[500px] overflow-auto whitespace-pre-wrap text-sm leading-7 text-zinc-300">
-            {resumeText}
-          </pre>
+    {/* ATS Score */}
+
+    <div className="rounded-3xl border border-pink-500/20 bg-white/[0.04] p-8">
+
+      <h2 className="text-3xl font-bold text-white">
+        Resume Intelligence Report
+      </h2>
+
+      <p className="mt-2 text-zinc-400">
+        Generated by Sage
+      </p>
+
+      <div className="mt-8 flex items-center justify-between">
+
+        <div>
+
+          <p className="text-zinc-400">
+            ATS Score
+          </p>
+
+          <p className="mt-2 text-6xl font-bold text-pink-400">
+            {analysis.atsScore}%
+          </p>
+
         </div>
-      )}
+
+      </div>
+
+    </div>
+
+    {/* Summary */}
+
+    <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-8">
+
+      <h3 className="mb-4 text-2xl font-semibold text-white">
+        Summary
+      </h3>
+
+      <p className="leading-8 text-zinc-300">
+        {analysis.summary}
+      </p>
+
+    </div>
+
+    {/* Strengths + Weaknesses */}
+
+    <div className="grid gap-6 md:grid-cols-2">
+
+      <div className="rounded-3xl border border-green-500/20 bg-green-500/5 p-8">
+
+        <h3 className="mb-5 text-xl font-semibold text-green-400">
+          Strengths
+        </h3>
+
+        <ul className="space-y-3">
+
+          {analysis.strengths.map(
+            (item: string, index: number) => (
+              <li key={index}>
+                ✅ {item}
+              </li>
+            )
+          )}
+
+        </ul>
+
+      </div>
+
+      <div className="rounded-3xl border border-red-500/20 bg-red-500/5 p-8">
+
+        <h3 className="mb-5 text-xl font-semibold text-red-400">
+          Weaknesses
+        </h3>
+
+        <ul className="space-y-3">
+
+          {analysis.weaknesses.map(
+            (item: string, index: number) => (
+              <li key={index}>
+                ⚠️ {item}
+              </li>
+            )
+          )}
+
+        </ul>
+
+      </div>
+
+    </div>
+
+    {/* Missing Skills */}
+
+    <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-8">
+
+      <h3 className="mb-5 text-2xl font-semibold text-white">
+        Missing Skills
+      </h3>
+
+      <div className="flex flex-wrap gap-3">
+
+        {analysis.missingSkills.map(
+          (skill: string, index: number) => (
+            <span
+              key={index}
+              className="rounded-full bg-pink-500/10 px-4 py-2 text-pink-300"
+            >
+              {skill}
+            </span>
+          )
+        )}
+
+      </div>
+
+    </div>
+
+  </div>
+)}
+
     </div>
   );
 }

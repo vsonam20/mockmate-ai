@@ -2,6 +2,7 @@ import {
   LayoutDashboard,
   Mic,
   FileSearch,
+  Sparkles,
   ChartColumn,
   History,
   User,
@@ -23,6 +24,11 @@ export const navigation = [
     title: "Resume Analyzer",
     href: "/dashboard/resume",
     icon: FileSearch,
+  },
+  {
+    title: "Sage AI",
+    href: "/dashboard/sage",
+    icon: Sparkles,
   },
   {
     title: "Insights",

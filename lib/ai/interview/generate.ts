@@ -1,6 +1,7 @@
 import { ai } from "@/lib/ai/client";
 import { buildInterviewPrompt } from "./prompt";
 import { InterviewSchema } from "./types";
+import { extractJson } from "@/lib/utils/extract-json";
 
 interface GenerateInterviewInput {
   role: string;
@@ -26,13 +27,7 @@ export async function generateInterview(
     throw new Error("Gemini returned an empty response.");
   }
 
-  let parsed;
-
-  try {
-    parsed = JSON.parse(text);
-  } catch {
-    throw new Error("Gemini did not return valid JSON.");
-  }
+  const parsed = extractJson(text);
 
   return InterviewSchema.parse(parsed);
 }
