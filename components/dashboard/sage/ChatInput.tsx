@@ -13,31 +13,29 @@ export default function ChatInput({
   onInputChange,
   onSend,
 }: ChatInputProps) {
-  return (
-    <section className="rounded-3xl border border-white/10 bg-white/[0.04] p-6">
-      <div className="flex gap-3">
-        <input
-          type="text"
-          value={input}
-          placeholder="Ask Sage anything..."
-          onChange={(e) => onInputChange(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              onSend();
-            }
-          }}
-          disabled={loading}
-          className="flex-1 rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none"
-        />
+return (
+  <div className="flex items-center rounded-2xl border border-white/10 bg-black/20 px-3 py-2">
+    <input
+      type="text"
+      value={input}
+      placeholder="Ask Sage anything..."
+      onChange={(e) => onInputChange(e.target.value)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter") {
+          onSend();
+        }
+      }}
+      disabled={loading}
+      className="flex-1 bg-transparent px-3 text-white placeholder:text-zinc-500 outline-none"
+    />
 
-        <button
-          onClick={onSend}
-          disabled={loading}
-          className="rounded-xl bg-pink-500 px-6 py-3 font-medium text-white transition hover:bg-pink-600 disabled:opacity-50"
-        >
-          {loading ? "..." : "Send"}
-        </button>
-      </div>
-    </section>
-  );
+    <button
+      onClick={onSend}
+      disabled={loading}
+      className="rounded-xl bg-pink-500 px-4 py-2 font-medium text-white transition hover:bg-pink-600 disabled:opacity-50"
+    >
+      {loading ? "..." : "Send"}
+    </button>
+  </div>
+);
 }

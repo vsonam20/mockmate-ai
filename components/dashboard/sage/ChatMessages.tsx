@@ -8,23 +8,19 @@ interface ChatMessagesProps {
 export default function ChatMessages({
   messages,
 }: ChatMessagesProps) {
+  if (messages.length === 0) {
+    return null;
+  }
+
   return (
-    <section className="rounded-3xl border border-white/10 bg-white/[0.04] p-6">
-      {messages.length === 0 ? (
-        <p className="text-center text-zinc-500">
-          Start a conversation with Sage.
-        </p>
-      ) : (
-        <div className="space-y-4">
-          {messages.map((message) => (
-            <MessageBubble
-              key={message.id}
-              message={message.content}
-              isUser={message.role === "user"}
-            />
-          ))}
-        </div>
-      )}
-    </section>
+    <div className="space-y-10 pb-6">
+      {messages.map((message) => (
+        <MessageBubble
+          key={message.id}
+          message={message.content}
+          isUser={message.role === "user"}
+        />
+      ))}
+    </div>
   );
 }

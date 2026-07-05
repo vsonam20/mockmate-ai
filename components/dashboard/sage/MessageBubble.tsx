@@ -8,14 +8,25 @@ export default function MessageBubble({
   isUser = false,
 }: MessageBubbleProps) {
   return (
-    <div
-      className={`max-w-xl rounded-2xl px-4 py-3 ${
-        isUser
-          ? "ml-auto bg-pink-500 text-white"
-          : "bg-white/10 text-zinc-200"
-      }`}
-    >
-      {message}
+    <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
+      <div
+        className={`
+          max-w-[65%]
+          rounded-3xl
+          px-5
+          py-4
+          whitespace-pre-wrap
+          leading-7
+          shadow-sm
+          ${
+            isUser
+              ? "bg-pink-500 text-white"
+              : "bg-white/10 text-zinc-200"
+          }
+        `}
+      >
+        {message}
+      </div>
     </div>
   );
 }

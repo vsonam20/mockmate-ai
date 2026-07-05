@@ -1,42 +1,50 @@
+"use client";
+
 import {
-  FileText,
-  Mic,
-  GraduationCap,
   Briefcase,
-  TrendingUp,
+  FileText,
+  GraduationCap,
+  Mic,
   Sparkles,
+  TrendingUp,
 } from "lucide-react";
 
 const actions = [
   {
+    title: "Resume Review",
+    subtitle: "Resume feedback",
     icon: FileText,
-    label: "Resume Review",
-    prompt: "Review my resume",
+    prompt: "Review my resume and suggest improvements.",
   },
   {
+    title: "Interview Coach",
+    subtitle: "AI interviewer",
     icon: Mic,
-    label: "Interview Coach",
-    prompt: "Help me prepare for interview",
+    prompt: "Help me prepare for my interview.",
   },
   {
+    title: "Improve ATS",
+    subtitle: "Optimize ATS",
     icon: TrendingUp,
-    label: "Improve ATS",
     prompt: "How can I improve my ATS score?",
   },
   {
+    title: "Learning Roadmap",
+    subtitle: "Learning plan",
     icon: GraduationCap,
-    label: "Learning Roadmap",
-    prompt: "Create my AI roadmap",
+    prompt: "Create my AI learning roadmap.",
   },
   {
+    title: "Company Prep",
+    subtitle: "Interview prep",
     icon: Briefcase,
-    label: "Company Prep",
-    prompt: "Prepare me for Google interview",
+    prompt: "Prepare me for a Google interview.",
   },
   {
+    title: "Ask Anything",
+    subtitle: "Career guidance",
     icon: Sparkles,
-    label: "Ask Anything",
-    prompt: "Hello Sage",
+    prompt: "Hello Sage!",
   },
 ];
 
@@ -45,37 +53,42 @@ interface Props {
 }
 
 export default function QuickActions({ onSelect }: Props) {
-  return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {actions.map(({ icon: Icon, label, prompt }) => (
-        <button
-          key={label}
-          onClick={() => onSelect(prompt)}
-          className="
-            group
-            rounded-2xl
-            border
-            border-white/10
-            bg-white/[0.03]
-            p-5
-            text-left
-            transition-all
-            duration-300
-            hover:-translate-y-1
-            hover:border-pink-500/40
-            hover:bg-pink-500/10
-          "
-        >
-          <Icon
-            className="mb-4 text-pink-400 group-hover:scale-110 transition-transform"
-            size={24}
-          />
+return (
+  <div className="grid grid-cols-6 gap-4">
+    {actions.map(({ title, subtitle, icon: Icon, prompt }) => (
+      <button
+        key={title}
+        onClick={() => onSelect(prompt)}
+        className="
+          h-30
+          rounded-2xl
+          border
+          border-white/10
+          bg-white/[0.03]
+          p-3
+          text-left
+          transition-all
+          duration-300
+          hover:-translate-y-1
+          hover:border-pink-500/40
+          hover:bg-pink-500/[0.04]
+        "
+      >
+        <div className="flex h-full flex-col">
+        <div className="mb-2 flex h-9 w-9 items-center justify-center rounded-xl bg-pink-500/10">
+          <Icon className="h-5 w-5 text-pink-400" />
+        </div>
 
-          <p className="font-semibold text-white">
-            {label}
-          </p>
-        </button>
-      ))}
-    </div>
-  );
+       <h3 className="text-xl font-semibold leading-6 text-white">
+          {title}
+        </h3>
+
+        <p className="mt-1 text-xs text-zinc-400">
+          {subtitle}
+        </p>
+        </div>
+      </button>
+    ))}
+  </div>
+);
 }

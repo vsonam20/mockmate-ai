@@ -1,9 +1,9 @@
-import { GoogleGenAI } from "@google/genai";
+import Groq from "groq-sdk";
 
-if (!process.env.GEMINI_API_KEY) {
-  throw new Error("Missing GEMINI_API_KEY");
+if (!process.env.GROQ_API_KEY) {
+  throw new Error("Missing GROQ_API_KEY");
 }
 
-export const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY,
+export const ai = new Groq({
+  apiKey: process.env.GROQ_API_KEY,
 });
