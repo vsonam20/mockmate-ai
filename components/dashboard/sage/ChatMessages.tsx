@@ -13,7 +13,7 @@ export default function ChatMessages({
   }
 
   return (
-    <div className="space-y-10 pb-6">
+    <div className="flex flex-col gap-5 pb-8">
       {messages.map((message) => (
         <MessageBubble
           key={message.id}

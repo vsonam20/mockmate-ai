@@ -1,4 +1,6 @@
 import { ai } from "@/lib/ai/client";
+import { extractJson } from "@/lib/utils/extract-json";
+
 import { buildEvaluationPrompt } from "./prompt";
 import {
   InterviewEvaluationSchema,
@@ -14,24 +16,33 @@ export async function evaluateInterview(
 ) {
   const prompt = buildEvaluationPrompt(questions);
 
-  const response = await ai.models.generateContent({
-    model: "gemini-2.5-flash",
-    contents: prompt,
-  });
-
-  const text = response.text?.trim();
-
-  if (!text) {
-    throw new Error("Gemini returned an empty response.");
-  }
-
-  let parsed;
-
   try {
-    parsed = JSON.parse(text);
-  } catch {
-    throw new Error("Gemini did not return valid JSON.");
-  }
+    const response =
+      await ai.chat.completions.create({
+        model: "llama-3.3-70b-versatile",
+        temperature: 0.2,
 
-  return InterviewEvaluationSchema.parse(parsed);
+        messages: [
+          {
+            role: "user",
+            content: prompt,
+          },
+        ],
+      });
+
+    const text =
+      response.choices[0]?.message?.content?.trim();
+
+    if (!text) {
+      throw new Error("Groq returned an empty response.");
+    }
+
+    const parsed = extractJson(text);
+
+    return InterviewEvaluationSchema.parse(parsed);
+
+  } catch (error) {
+    console.error("Groq Evaluation Error:", error);
+    throw error;
+  }
 }

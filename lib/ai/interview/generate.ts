@@ -1,7 +1,8 @@
 import { ai } from "@/lib/ai/client";
+import { extractJson } from "@/lib/utils/extract-json";
+
 import { buildInterviewPrompt } from "./prompt";
 import { InterviewSchema } from "./types";
-import { extractJson } from "@/lib/utils/extract-json";
 
 interface GenerateInterviewInput {
   role: string;
@@ -16,18 +17,33 @@ export async function generateInterview(
 ) {
   const prompt = buildInterviewPrompt(input);
 
-  const response = await ai.models.generateContent({
-    model: "gemini-2.5-flash",
-    contents: prompt,
-  });
+  try {
+    const response =
+      await ai.chat.completions.create({
+        model: "llama-3.3-70b-versatile",
+        temperature: 0.3,
 
-  const text = response.text?.trim();
+        messages: [
+          {
+            role: "user",
+            content: prompt,
+          },
+        ],
+      });
 
-  if (!text) {
-    throw new Error("Gemini returned an empty response.");
+    const text =
+      response.choices[0]?.message?.content?.trim();
+
+    if (!text) {
+      throw new Error("Groq returned an empty response.");
+    }
+
+    const parsed = extractJson(text);
+
+    return InterviewSchema.parse(parsed);
+
+  } catch (error) {
+    console.error("Groq Interview Error:", error);
+    throw error;
   }
-
-  const parsed = extractJson(text);
-
-  return InterviewSchema.parse(parsed);
 }

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-
 import { useSageChat } from "@/hooks/useSageChat";
 
 import SageLanding from "./SageLanding";
@@ -29,62 +28,61 @@ export default function SageChat() {
   }, [messages, loading]);
 
   return (
-    <div className="mx-auto flex h-[calc(100vh-145px)] max-w-6xl flex-col">
+    <div className="mx-auto flex h-full max-w-6xl flex-col">
 
-      {/* Landing */}
+      {/* ---------------- Landing ---------------- */}
+
       {!hasMessages && (
         <>
           <div className="flex-1">
             <SageLanding onSelect={setInput} />
           </div>
 
-          <div className="mx-auto mt-6 w-full max-w-6xl pb-6">
-            <ChatInput
+          <div className="pt-6">
+          <ChatInput
+              compact
               input={input}
               loading={loading}
               onInputChange={setInput}
               onSend={sendMessage}
-            />
+          />
           </div>
         </>
       )}
 
-      {/* Conversation */}
+      {/* ---------------- Conversation ---------------- */}
+
       {hasMessages && (
         <>
-          <div className="flex-1 min-h-0 overflow-y-auto pr-2">
-            <div className="space-y-8 pb-8">
+          <div className="flex-1 min-h-0 overflow-y-auto px-6">
 
-            <div className="mb-5 flex items-center gap-4">
-              <div className="h-px flex-1 bg-white/10" />
+            <div className="mx-auto max-w-5xl">
 
-              <span className="text-sm text-zinc-500">
-                Today
-              </span>
+              <ChatMessages messages={messages} />
 
-              <div className="h-px flex-1 bg-white/10" />
-            </div>
+              {loading && (
+                <div className="mt-6">
+                  <TypingIndicator />
+                </div>
+              )}
 
-            <ChatMessages messages={messages} />
+              <div ref={bottomRef} />
 
-            {loading && (
-              <div className="mt-6">
-                <TypingIndicator />
-              </div>
-            )}
-
-            <div ref={bottomRef} />
             </div>
 
           </div>
 
-          <div className="border-t border-white/10 bg-[#090506]/95 pt-4 pb-4 backdrop-blur-xl">
-            <ChatInput
-              input={input}
-              loading={loading}
-              onInputChange={setInput}
-              onSend={sendMessage}
-            />
+          <div className="border-t border-white/10 px-2 pt-8 pb-6">
+
+            <div className="mx-auto max-w-5xl">
+              <ChatInput
+                input={input}
+                loading={loading}
+                onInputChange={setInput}
+                onSend={sendMessage}
+              />
+            </div>
+
           </div>
         </>
       )}

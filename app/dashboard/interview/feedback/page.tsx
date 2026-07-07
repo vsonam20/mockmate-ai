@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import FeedbackFooter from "@/components/interview/feedback/FeedbackFooter";
 
 interface Props {
   searchParams: Promise<{
@@ -231,6 +232,7 @@ const improvements =
   </div>
 ))}
       </div>
+      <FeedbackFooter />
     </main>
   );
 }
