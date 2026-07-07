@@ -8,6 +8,7 @@ import { generateInterviewAction } from "@/app/actions/interview";
 interface GenerateButtonProps {
   config: {
     role: string;
+    company: string;
     experience: string;
     type: string;
     difficulty: string;

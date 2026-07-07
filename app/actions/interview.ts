@@ -5,6 +5,7 @@ import { generateInterview } from "@/lib/ai/interview/generate";
 
 interface GenerateInterviewInput {
   role: string;
+  company: string;
   experience: string;
   type: string;
   difficulty: string;
@@ -35,6 +36,7 @@ export async function generateInterviewAction(
     .insert({
       user_id: user.id,
       role: data.role,
+      target_company: data.company || null,
       experience: data.experience,
       interview_type: data.type.toLowerCase(),
       difficulty: data.difficulty.toLowerCase(),
