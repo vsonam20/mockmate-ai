@@ -1,6 +1,7 @@
 interface PromptInput {
   role: string;
   company: string;
+  techStack: string;
   experience: string;
   type: string;
   difficulty: string;
@@ -15,20 +16,24 @@ Generate a mock interview.
 
 Role: ${data.role}
 Target Company: ${data.company || "General"}
+Primary Technology: ${data.techStack || "General"}
 Experience: ${data.experience}
 Interview Type: ${data.type}
 Difficulty: ${data.difficulty}
 
 Instructions:
 
+Instructions:
+
+- Generate questions primarily around the selected role.
 - If a target company is provided, imitate that company's interview style.
-- If no company is provided, create a high-quality generic interview.
-- Questions must match the selected role.
+- If a primary technology is provided, make at least 70% of the interview questions based on that technology.
+- The remaining questions may test general concepts related to the role.
+- Questions must match the selected experience level.
 - Questions must match the selected difficulty.
+- Mix conceptual, practical and scenario-based questions.
 - Avoid duplicate questions.
-- Make questions realistic.
-- Mix conceptual and practical questions.
-- Do not ask the exact same question twice.
+- Make the interview feel realistic.
 
 If Target Company is:
 

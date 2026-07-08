@@ -6,6 +6,7 @@ import { generateInterview } from "@/lib/ai/interview/generate";
 interface GenerateInterviewInput {
   role: string;
   company: string;
+  techStack: string;
   experience: string;
   type: string;
   difficulty: string;
@@ -37,6 +38,7 @@ export async function generateInterviewAction(
       user_id: user.id,
       role: data.role,
       target_company: data.company || null,
+      tech_stack: data.techStack || null,
       experience: data.experience,
       interview_type: data.type.toLowerCase(),
       difficulty: data.difficulty.toLowerCase(),

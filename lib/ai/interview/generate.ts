@@ -7,6 +7,7 @@ import { InterviewSchema } from "./types";
 interface GenerateInterviewInput {
   role: string;
   company: string;
+  techStack: string;
   experience: string;
   type: string;
   difficulty: string;

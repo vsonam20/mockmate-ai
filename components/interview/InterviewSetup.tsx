@@ -16,6 +16,7 @@ import OptionSelector from "./ui/OptionSelector";
 import SectionTitle from "./ui/SectionTitle";
 import StepBadge from "./ui/StepBadge";
 import CompanySearch from "./ui/CompanySearch";
+import TechStackSearch from "./ui/TechStackSearch";
 const popularCompanies = [
   "Google",
   "Microsoft",
@@ -27,10 +28,22 @@ const popularCompanies = [
   "OpenAI",
 ];
 
+const popularTechStacks = [
+  "Python",
+  "SQL",
+  "TensorFlow",
+  "PyTorch",
+  "React",
+  "Node.js",
+  "MongoDB",
+  "Docker",
+];
+
 export default function InterviewSetup() {
   const [interviewConfig, setInterviewConfig] = useState({
     role: "",
     company: "",
+    techStack: "",
     experience: "",
     type: "",
     difficulty: "",
@@ -108,7 +121,7 @@ export default function InterviewSetup() {
 
         <div className="flex items-center gap-4">
 
-          <StepBadge step={3} />
+          <StepBadge step={2} />
 
           <SectionTitle
             title="Company (Optional)"
@@ -152,7 +165,55 @@ export default function InterviewSetup() {
 
       </section>
 
+      {/* Tech Stack */}
 
+      <section className="space-y-6">
+
+        <div className="flex items-center gap-4">
+
+          <StepBadge step={3} />
+
+          <SectionTitle
+            title="Tech Stack"
+            description="Choose the primary technology you want to be interviewed on."
+          />
+
+        </div>
+
+        <div className="space-y-6">
+
+          <TechStackSearch
+            value={interviewConfig.techStack}
+            onSelect={(value) =>
+              setInterviewConfig((prev) => ({
+                ...prev,
+                techStack: value,
+              }))
+            }
+          />
+
+          <div>
+
+            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-zinc-400">
+              Popular Technologies
+            </h3>
+
+            <OptionSelector
+              options={popularTechStacks}
+              selected={interviewConfig.techStack}
+              onSelect={(value) =>
+                setInterviewConfig((prev) => ({
+                  ...prev,
+                  techStack: value,
+                }))
+              }
+            />
+
+          </div>
+
+        </div>
+
+      </section>
 
 
       {/* Experience */}
@@ -161,7 +222,7 @@ export default function InterviewSetup() {
 
         <div className="flex items-center gap-4">
 
-          <StepBadge step={2} />
+          <StepBadge step={4} />
 
           <SectionTitle
             title="Experience"
@@ -189,7 +250,7 @@ export default function InterviewSetup() {
 
         <div className="flex items-center gap-4">
 
-          <StepBadge step={3} />
+          <StepBadge step={5} />
 
           <SectionTitle
             title="Interview Type"
@@ -217,7 +278,7 @@ export default function InterviewSetup() {
 
         <div className="flex items-center gap-4">
 
-          <StepBadge step={4} />
+          <StepBadge step={6} />
 
           <SectionTitle
             title="Difficulty"
@@ -245,7 +306,7 @@ export default function InterviewSetup() {
 
         <div className="flex items-center gap-4">
 
-          <StepBadge step={5} />
+          <StepBadge step={7} />
 
           <SectionTitle
             title="Number of Questions"
