@@ -1,15 +1,39 @@
-"use client";
-
 import { Bell, Search } from "lucide-react";
 
-export default function Topbar() {
-  const fullName = "Sonam Verma";
+import { createClient } from "@/lib/supabase/server";
+
+export default async function Topbar() {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const fullName =
+    user?.user_metadata?.full_name ??
+    user?.email?.split("@")[0] ??
+    "User";
 
   const initials = fullName
     .split(" ")
-    .map((word) => word[0])
+    .map((word: string) => word[0])
     .join("")
     .toUpperCase();
+
+  const { count } = await supabase
+    .from("interviews")
+    .select("*", {
+      count: "exact",
+      head: true,
+    })
+    .eq("user_id", user?.id);
+
+  const streak = count ? Math.max(1, Math.floor(count / 5)) : 0;
+
+  const streakMessage =
+    streak > 0
+      ? "Keep it alive today!"
+      : "Start your first interview today!";
 
   return (
     <header className="sticky top-0 z-30 border-b border-white/10 bg-black/30 backdrop-blur-xl">
@@ -17,31 +41,31 @@ export default function Topbar() {
 
         {/* Left */}
 
-<div className="flex items-center gap-4">
+        <div className="flex items-center gap-4">
 
-  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-500/20 to-pink-500/20 border border-orange-500/20">
-    <span className="text-2xl">🔥</span>
-  </div>
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-orange-500/20 bg-gradient-to-br from-orange-500/20 to-pink-500/20">
+            <span className="text-2xl">🔥</span>
+          </div>
 
-  <div>
+          <div>
 
-    <p className="text-xl font-semibold text-white">
-      12 Day Streak
-    </p>
+            <p className="text-3xl font-bold text-white">
+              {streak > 0
+                ? `${streak} Day Streak`
+                : "No Streak"}
+            </p>
 
-    <p className="text-sm text-zinc-400">
-      Keep it alive today!
-    </p>
+            <p className="text-sm text-zinc-400">
+              {streakMessage}
+            </p>
 
-  </div>
+          </div>
 
-</div>
+        </div>
 
         {/* Right */}
 
         <div className="flex items-center gap-4">
-
-          {/* Search */}
 
           <div className="relative">
 
@@ -73,8 +97,6 @@ export default function Topbar() {
 
           </div>
 
-          {/* Notification */}
-
           <button
             className="
               flex
@@ -94,8 +116,6 @@ export default function Topbar() {
           >
             <Bell size={19} />
           </button>
-
-          {/* Avatar */}
 
           <button
             className="

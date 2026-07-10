@@ -1,6 +1,16 @@
 import { getGreeting } from "@/lib/dashboard/greeting";
 
-export default function DashboardHeader() {
+interface DashboardHeaderProps {
+  fullName: string;
+  streak: number;
+  streakMessage: string;
+}
+
+export default function DashboardHeader({
+  fullName,
+  streak,
+  streakMessage,
+}: DashboardHeaderProps) {
   const { greeting, emoji } = getGreeting();
 
   return (
@@ -10,12 +20,13 @@ export default function DashboardHeader() {
       </p>
 
       <h1 className="mt-2 text-4xl font-bold tracking-tight text-white">
-        Welcome back, Sonam
+        Welcome back, {fullName}
       </h1>
 
       <p className="mt-3 max-w-2xl text-base leading-7 text-zinc-400">
-          You're on a 12-day streak. Keep going and ace your next interview.
+        Let's continue improving your interview skills.
       </p>
+      
     </section>
   );
 }

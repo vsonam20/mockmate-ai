@@ -12,6 +12,7 @@ interface GenerateInterviewInput {
   type: string;
   difficulty: string;
   questions: number;
+  resumeText?: string;
 }
 
 export async function generateInterview(

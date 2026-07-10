@@ -22,6 +22,26 @@ export default async function SessionPage({
 
   const supabase = await createClient();
 
+  const { data: interview } = await supabase
+  .from("interviews")
+  .select(`
+    role,
+    target_company,
+    tech_stack,
+    difficulty,
+    interview_type
+  `)
+  .eq("id", id)
+  .single();
+
+  if (!interview) {
+    return (
+      <div className="p-10 text-center text-red-500">
+        Interview not found.
+      </div>
+    );
+  }
+
   const { data: questions, error } = await supabase
     .from("interview_questions")
     .select("*")
@@ -40,6 +60,7 @@ export default async function SessionPage({
     <main className="mx-auto max-w-7xl px-6 py-10">
       <InterviewSession
         interviewId={id}
+        interview={interview}
         questions={questions}
       />
     </main>

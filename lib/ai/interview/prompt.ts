@@ -6,11 +6,12 @@ interface PromptInput {
   type: string;
   difficulty: string;
   questions: number;
+  resumeText?: string;
 }
 
 export function buildInterviewPrompt(data: PromptInput) {
   return `
-You are a Senior Technical Interviewer.
+You are an expert interviewer capable of conducting Technical, HR, Behavioral, Mixed, and Company-specific interviews.
 
 Generate a mock interview.
 
@@ -19,7 +20,87 @@ Target Company: ${data.company || "General"}
 Primary Technology: ${data.techStack || "General"}
 Experience: ${data.experience}
 Interview Type: ${data.type}
+
 Difficulty: ${data.difficulty}
+
+IMPORTANT RULES:
+
+Interview Type Rules:
+
+- If Interview Type is "HR", generate ONLY HR and behavioral questions.
+- Do NOT ask coding, DSA, SQL, system design, programming or technical questions.
+
+- If Interview Type is "Technical", generate ONLY technical questions.
+
+- If Interview Type is "Mixed", generate approximately:
+  • 70% Technical questions
+  • 30% HR/Behavioral questions
+
+Difficulty Rules:
+
+Easy:
+- Beginner level
+- Basic concepts
+- Short questions
+- No tricky scenarios
+- No advanced system design
+
+Medium:
+- Intermediate practical questions
+- Resume-based questions
+- Scenario-based questions
+
+Hard:
+- Senior-level interview
+- Complex scenarios
+- Deep technical knowledge
+- Cross-topic questions
+- Follow-up style questions
+
+Resume Rules:
+
+If resumeText is provided:
+
+- Around 60% of the interview should come from the resume.
+- Remaining questions should follow the selected Interview Type.
+- Never ignore the selected Interview Type because of the resume.
+
+Examples:
+
+If Interview Type = HR:
+Ask HR questions about the projects instead of technical implementation.
+
+Example:
+"Tell me about your Student Task Manager project."
+"What challenge did you face?"
+"Why did you choose Java?"
+
+NOT:
+"Explain JDBC transactions."
+
+If Interview Type = Technical:
+Ask implementation questions.
+
+If Interview Type = Mixed:
+Mix both HR and technical.
+
+${
+  data.resumeText
+    ? `
+Candidate Resume:
+
+${data.resumeText}
+
+IMPORTANT:
+- Use the candidate's resume to personalize the interview.
+- Ask questions about the candidate's projects.
+- Ask about the technologies mentioned in the resume.
+- Ask about internships, certifications and experience if available.
+- Do NOT ask only generic questions.
+- Around 60% of the interview should be based on the resume.
+`
+    : ""
+}
 
 Instructions:
 
@@ -66,7 +147,7 @@ If the company is unknown,
 generate a standard industry interview.
 
 
-
+Before generating questions, verify that every question follows the selected Interview Type and Difficulty. If any question violates these settings, regenerate it.
 Generate exactly ${data.questions} interview questions.
 
 Return ONLY valid JSON.

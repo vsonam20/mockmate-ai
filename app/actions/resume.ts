@@ -81,7 +81,8 @@ export async function uploadResumeAction({
 
     await updateResumeAnalysis(
       resume.id,
-      result.analysis
+      result.analysis,
+      result.extractedText
     );
 
     return {

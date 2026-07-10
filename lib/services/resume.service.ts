@@ -66,7 +66,8 @@ export async function updateResumeStatus(
 
 export async function updateResumeAnalysis(
   resumeId: string,
-  analysis: ResumeAnalysis
+  analysis: ResumeAnalysis,
+  extractedText: string
 ) {
   const supabase = await createClient();
 
@@ -76,6 +77,9 @@ export async function updateResumeAnalysis(
     .update({
       ats_score: analysis.atsScore,
       summary: analysis.summary,
+
+      extracted_text: extractedText,
+
       status: "completed",
       updated_at: new Date().toISOString(),
     })

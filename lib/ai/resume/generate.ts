@@ -15,18 +15,45 @@ export async function generateResumeAnalysis(
 ) {
   const prompt = buildResumePrompt(input);
 
-  const response = await ai.models.generateContent({
-    model: "gemini-2.5-flash",
-    contents: prompt,
-  });
+  try {
+    const response =
+      await ai.chat.completions.create({
+        model: "llama-3.3-70b-versatile",
+        temperature: 0.3,
 
-  const text = response.text?.trim();
+        messages: [
+          {
+            role: "user",
+            content: prompt,
+          },
+        ],
+      });
 
-  if (!text) {
-    throw new Error("Gemini returned an empty response.");
+    const text =
+      response.choices[0]?.message?.content?.trim();
+
+    if (!text) {
+      throw new Error("Groq returned an empty response.");
+    }
+
+    const result = ResumeAnalysisSchema.parse(
+      extractJson(text)
+    );
+
+    // Normalize ATS score
+    if (result.atsScore <= 1) {
+      result.atsScore = Math.round(result.atsScore * 100);
+    } else {
+      result.atsScore = Math.round(result.atsScore);
+    }
+
+    console.log("Resume Analysis:");
+    console.dir(result, { depth: null });
+
+    return result;
+
+  } catch (error) {
+    console.error("Groq Resume Error:", error);
+    throw error;
   }
-
-  const parsed = extractJson(text);
-
-  return ResumeAnalysisSchema.parse(parsed);
 }

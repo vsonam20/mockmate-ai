@@ -32,7 +32,7 @@ export const navigation = [
   },
   {
     title: "Insights",
-    href: "/dashboard/performance",
+    href: "/dashboard/insights",
     icon: ChartColumn,
   },
   {
