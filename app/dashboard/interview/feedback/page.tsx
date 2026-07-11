@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import FeedbackFooter from "@/components/interview/feedback/FeedbackFooter";
+import InProgressPage from "@/components/interview/feedback/InProgressPage";
 
 interface Props {
   searchParams: Promise<{
@@ -27,6 +28,14 @@ export default async function FeedbackPage({
     .select("*")
     .eq("id", id)
     .single();
+
+    if (interview?.status !== "completed") {
+      return (
+        <InProgressPage
+          interviewId={interview.id}
+        />
+      );
+    }
 
   const { data: answers } = await supabase
     .from("interview_answers")

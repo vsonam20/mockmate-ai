@@ -6,6 +6,7 @@ import {
   Briefcase,
   CalendarDays,
   CircleCheck,
+  Clock3,
   FileQuestion,
   ArrowRight,
 } from "lucide-react";
@@ -86,10 +87,22 @@ export default function HistoryCard({
               {date}
             </div>
 
-            <div className="flex items-center gap-2 text-pink-400 capitalize">
-              <CircleCheck size={16} />
+            <div
+              className={`flex items-center gap-2 capitalize ${
+                interview.status === "completed"
+                  ? "text-green-400"
+                  : "text-yellow-400"
+              }`}
+            >
+              {interview.status === "completed" ? (
+                <CircleCheck size={16} />
+              ) : (
+                <Clock3 size={16} />
+              )}
 
-              {interview.status}
+              {interview.status === "completed"
+                ? "Completed"
+                : "In Progress"}
             </div>
 
             <div className="flex items-center gap-2 text-zinc-400 capitalize">
@@ -109,7 +122,11 @@ export default function HistoryCard({
         {/* Right */}
 
         <Link
-          href={`/dashboard/interview/feedback?id=${interview.id}`}
+          href={
+            interview.status === "completed"
+              ? `/dashboard/interview/feedback?id=${interview.id}`
+              : `/dashboard/interview/session?id=${interview.id}`
+          }
         >
           <button
             className="
@@ -129,7 +146,9 @@ export default function HistoryCard({
               hover:scale-105
             "
           >
-            View Feedback
+            {interview.status === "completed"
+              ? "View Feedback"
+              : "Continue Interview"}
 
             <ArrowRight size={18} />
           </button>
