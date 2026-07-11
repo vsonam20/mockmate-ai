@@ -9,6 +9,8 @@ export default async function Topbar() {
     data: { user },
   } = await supabase.auth.getUser();
 
+  console.log("TOPBAR USER:", user);
+
   const fullName =
     user?.user_metadata?.full_name ??
     user?.email?.split("@")[0] ??

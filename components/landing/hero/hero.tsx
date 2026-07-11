@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { motion } from "framer-motion";
 import HeroVisual from "./hero-visual";
 import GradientText from "@/components/ui/gradient-text";
@@ -43,39 +44,47 @@ export default function Hero() {
 
           <div className="mt-10 flex flex-wrap gap-5">
 
-            <button
-              className="
-              rounded-2xl
-              bg-gradient-to-r
-              from-pink-500
-              to-rose-500
-              px-8
-              py-4
-              font-semibold
-              text-white
-              transition
-              hover:scale-105
-              "
-            >
-              Start Free
-            </button>
+          <Link
+            href="/sign-up"
+            className="
+            rounded-2xl
+            bg-gradient-to-r
+            from-pink-500
+            to-rose-500
+            px-8
+            py-4
+            font-semibold
+            text-white
+            transition
+            hover:scale-105
+            "
+          >
+            Start Free
+          </Link>
 
-            <button
-              className="
-              rounded-2xl
-              border
-              border-white/10
-              bg-white/5
-              px-8
-              py-4
-              text-white
-              backdrop-blur-xl
-              transition
-              hover:bg-white/10
-              "
-            >
-              Watch Demo
-            </button>
+          <button
+            onClick={() => {
+              document
+                .getElementById("features")
+                ?.scrollIntoView({
+                  behavior: "smooth",
+                });
+            }}
+            className="
+            rounded-2xl
+            border
+            border-white/10
+            bg-white/5
+            px-8
+            py-4
+            text-white
+            backdrop-blur-xl
+            transition
+            hover:bg-white/10
+            "
+          >
+            Watch Demo
+          </button>
 
           </div>
 

@@ -1,8 +1,42 @@
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
+import { createServerClient } from "@supabase/ssr";
 
 export async function proxy(request: NextRequest) {
-  return await updateSession(request);
+  // Refresh the session first
+  const response = await updateSession(request);
+
+  // Create a Supabase client using the current request
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll();
+        },
+        setAll() {
+          // Proxy shouldn't modify cookies here.
+        },
+      },
+    }
+  );
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  // Protect all dashboard routes
+  if (
+    request.nextUrl.pathname.startsWith("/dashboard") &&
+    !user
+  ) {
+    return NextResponse.redirect(
+      new URL("/sign-in", request.url)
+    );
+  }
+
+  return response;
 }
 
 export const config = {
