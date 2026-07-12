@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono, Sora } from "next/font/google";
 import "./globals.css";
+import { Toaster } from "sonner";
 
 const sora = Sora({
   variable: "--font-heading",
@@ -34,7 +35,15 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${sora.variable} ${inter.variable} ${jetbrainsMono.variable}`}
     >
-      <body>{children}</body>
+      <body>{children}
+
+        <Toaster
+          position="top-right"
+          richColors
+          closeButton
+        />
+        
+      </body>
     </html>
   );
 }
