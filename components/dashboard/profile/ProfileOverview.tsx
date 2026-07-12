@@ -1,5 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 
+import { calculateStreak } from "@/lib/dashboard/streak";
+
 import PageHeader from "@/components/dashboard/PageHeader";
 import StatCard from "@/components/dashboard/StatCard";
 
@@ -32,14 +34,31 @@ export default async function ProfileOverview() {
     year: "numeric",
   });
 
-  // Interviews
-  const { count: interviewCount } = await supabase
-    .from("interviews")
-    .select("*", {
-      count: "exact",
-      head: true,
-    })
-    .eq("user_id", user.id);
+    // Total Interviews
+    const { count: interviewCount } = await supabase
+      .from("interviews")
+      .select("*", {
+        count: "exact",
+        head: true,
+      })
+      .eq("user_id", user.id);
+
+    // Fetch interview dates for streak calculation
+    const { data: streakInterviews } = await supabase
+      .from("interviews")
+      .select("created_at")
+      .eq("user_id", user.id);
+
+    const streakData = calculateStreak(streakInterviews ?? []);
+
+    // Interview Progress Data
+    const { data: interviews } = await supabase
+      .from("interviews")
+      .select(`
+        role,
+        status
+      `)
+      .eq("user_id", user.id);
 
   // Latest Resume
   const { data: latestResume } = await supabase
@@ -54,10 +73,27 @@ export default async function ProfileOverview() {
 
   const xp = (interviewCount ?? 0) * 50;
 
-  const streak =
-    interviewCount && interviewCount > 0
-      ? interviewCount
-      : 0;
+  const completedInterviews =
+    interviews?.filter(
+      (item) => item.status === "completed"
+    ).length ?? 0;
+
+  const inProgressInterviews =
+    interviews?.filter(
+      (item) => item.status === "in_progress"
+    ).length ?? 0;
+
+  // Favorite Role
+  const roleMap: Record<string, number> = {};
+
+  interviews?.forEach((item) => {
+    roleMap[item.role] = (roleMap[item.role] ?? 0) + 1;
+  });
+
+  const favoriteRole =
+    Object.entries(roleMap).sort(
+      (a, b) => b[1] - a[1]
+    )[0]?.[0] ?? "--";
 
   const initials = fullName
     .split(" ")
@@ -116,7 +152,7 @@ export default async function ProfileOverview() {
           <StatCard
             title="Interviews"
             value={String(interviewCount ?? 0)}
-            subtitle="Completed interviews"
+            subtitle="Total interviews"
             icon={Trophy}
           />
 
@@ -136,9 +172,59 @@ export default async function ProfileOverview() {
 
           <StatCard
             title="Current Streak"
-            value={`${streak}`}
+            value={`${streakData.streak}`}
             subtitle="Interview streak"
             icon={Flame}
+          />
+
+        </div>
+
+      </section>
+
+      {/* Interview Progress */}
+
+      <section>
+
+        <h2 className="mb-6 text-2xl font-bold text-white">
+          🎯 Interview Progress
+        </h2>
+
+        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+
+          <StatCard
+            title="Completed"
+            value={String(completedInterviews)}
+            subtitle="Finished interviews"
+            icon={Trophy}
+          />
+
+          <StatCard
+            title="In Progress"
+            value={String(inProgressInterviews)}
+            subtitle="Ongoing interviews"
+            icon={Flame}
+          />
+
+          <StatCard
+            title="Favorite Role"
+            value={favoriteRole}
+            subtitle="Most practiced role"
+            icon={Sparkles}
+          />
+
+          <StatCard
+            title="Success Rate"
+            value={
+              interviewCount && interviewCount > 0
+                ? `${Math.round(
+                    (completedInterviews /
+                      interviewCount) *
+                      100
+                  )}%`
+                : "0%"
+            }
+            subtitle="Completion rate"
+            icon={FileCheck}
           />
 
         </div>

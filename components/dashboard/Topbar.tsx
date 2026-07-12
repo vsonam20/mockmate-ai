@@ -2,6 +2,8 @@ import { Bell, Search } from "lucide-react";
 
 import { createClient } from "@/lib/supabase/server";
 
+import { calculateStreak } from "@/lib/dashboard/streak";
+
 export default async function Topbar() {
   const supabase = await createClient();
 
@@ -22,20 +24,15 @@ export default async function Topbar() {
     .join("")
     .toUpperCase();
 
-  const { count } = await supabase
+  const { data: interviews } = await supabase
     .from("interviews")
-    .select("*", {
-      count: "exact",
-      head: true,
-    })
+    .select("created_at")
     .eq("user_id", user?.id);
 
-  const streak = count ? Math.max(1, Math.floor(count / 5)) : 0;
+  const streakData = calculateStreak(interviews ?? []);
 
-  const streakMessage =
-    streak > 0
-      ? "Keep it alive today!"
-      : "Start your first interview today!";
+  const streak = streakData.streak;
+  const streakMessage = streakData.message;
 
   return (
     <header className="sticky top-0 z-30 border-b border-white/10 bg-black/30 backdrop-blur-xl">
@@ -58,7 +55,9 @@ export default async function Topbar() {
             </p>
 
             <p className="text-sm text-zinc-400">
-              {streakMessage}
+              {streak === 0
+                ? "Complete your first interview today!"
+                : streakMessage}
             </p>
 
           </div>
