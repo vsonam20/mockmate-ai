@@ -1,8 +1,6 @@
-import { Bell, Search } from "lucide-react";
+
 
 import { createClient } from "@/lib/supabase/server";
-
-import { calculateStreak } from "@/lib/dashboard/streak";
 
 export default async function Topbar() {
   const supabase = await createClient();
@@ -11,28 +9,36 @@ export default async function Topbar() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  console.log("TOPBAR USER:", user);
+  if (!user) return null;
 
   const fullName =
-    user?.user_metadata?.full_name ??
-    user?.email?.split("@")[0] ??
+    user.user_metadata?.full_name ??
+    user.email?.split("@")[0] ??
     "User";
 
   const initials = fullName
     .split(" ")
-    .map((word: string) => word[0])
+    .filter(Boolean)
+    .map((word: string) => word.charAt(0))
     .join("")
     .toUpperCase();
 
-  const { data: interviews } = await supabase
-    .from("interviews")
-    .select("created_at")
-    .eq("user_id", user?.id);
+  // Fetch profile
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("streak")
+    .eq("id", user.id)
+    .single();
 
-  const streakData = calculateStreak(interviews ?? []);
+  const streak = profile?.streak ?? 0;
 
-  const streak = streakData.streak;
-  const streakMessage = streakData.message;
+  let streakMessage = "Complete your first interview today!";
+
+  if (streak === 1) {
+    streakMessage = "Great start! Keep the momentum going.";
+  } else if (streak > 1) {
+    streakMessage = "You're on fire! Keep your streak alive.";
+  }
 
   return (
     <header className="sticky top-0 z-30 border-b border-white/10 bg-black/30 backdrop-blur-xl">
@@ -50,14 +56,12 @@ export default async function Topbar() {
 
             <p className="text-3xl font-bold text-white">
               {streak > 0
-                ? `${streak} Day Streak`
+                ? `${streak} Day${streak > 1 ? "s" : ""} Streak`
                 : "No Streak"}
             </p>
 
             <p className="text-sm text-zinc-400">
-              {streak === 0
-                ? "Complete your first interview today!"
-                : streakMessage}
+              {streakMessage}
             </p>
 
           </div>
@@ -68,55 +72,7 @@ export default async function Topbar() {
 
         <div className="flex items-center gap-4">
 
-          <div className="relative">
 
-            <Search
-              size={18}
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500"
-            />
-
-            <input
-              type="text"
-              placeholder="Search interviews, resumes..."
-              className="
-                w-[320px]
-                rounded-2xl
-                border
-                border-white/10
-                bg-white/5
-                py-3
-                pl-12
-                pr-4
-                text-sm
-                text-white
-                placeholder:text-zinc-500
-                outline-none
-                transition
-                focus:border-pink-500/40
-              "
-            />
-
-          </div>
-
-          <button
-            className="
-              flex
-              h-11
-              w-11
-              items-center
-              justify-center
-              rounded-xl
-              border
-              border-white/10
-              bg-white/5
-              text-zinc-400
-              transition
-              hover:border-pink-500/40
-              hover:text-pink-400
-            "
-          >
-            <Bell size={19} />
-          </button>
 
           <button
             className="

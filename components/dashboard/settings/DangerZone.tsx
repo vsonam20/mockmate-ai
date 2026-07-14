@@ -1,31 +1,44 @@
+"use client";
+
+import { useState } from "react";
+
+import Button from "@/components/ui/Button";
+import DeleteAccountModal from "./DeleteAccountModal";
+
 export default function DangerZone() {
+  const [open, setOpen] = useState(false);
+
   return (
-    <section className="rounded-3xl border border-red-500/30 bg-red-500/5 p-8">
+    <>
+      <section className="rounded-3xl border border-red-500/20 bg-red-500/5 p-8">
 
-      <h2 className="mb-6 text-2xl font-bold text-red-400">
-        ⚠️ Danger Zone
-      </h2>
+        <h2 className="text-2xl font-bold text-red-400">
+          ⚠ Danger Zone
+        </h2>
 
-      <p className="mb-6 text-zinc-400">
-        Permanently delete your MockMate AI account and all associated data.
-      </p>
+        <p className="mt-3 max-w-2xl text-zinc-400">
+          Deleting your account permanently removes all your
+          interviews, resumes, settings, and profile.
+          This action cannot be undone.
+        </p>
 
-      <button
-        className="
-          rounded-2xl
-          border
-          border-red-500
-          px-6
-          py-3
-          font-semibold
-          text-red-400
-          transition
-          hover:bg-red-500/10
-        "
-      >
-        Delete Account
-      </button>
+        <div className="mt-8">
 
-    </section>
+          <Button
+            variant="danger"
+            onClick={() => setOpen(true)}
+          >
+            Delete Account
+          </Button>
+
+        </div>
+
+      </section>
+
+      <DeleteAccountModal
+        open={open}
+        onClose={() => setOpen(false)}
+      />
+    </>
   );
 }

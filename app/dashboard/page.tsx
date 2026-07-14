@@ -1,6 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
 import DashboardHome from "@/components/dashboard/overview/DashboardHome";
-import { calculateStreak } from "@/lib/dashboard/streak";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -9,24 +8,35 @@ export default async function DashboardPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
+  if (!user) return null;
+
   const fullName =
-    user?.user_metadata?.full_name ??
-    user?.email?.split("@")[0] ??
+    user.user_metadata?.full_name ??
+    user.email?.split("@")[0] ??
     "User";
 
-  // Fetch all interviews of current user
-  const { data: interviews } = await supabase
-    .from("interviews")
-    .select("created_at")
-    .eq("user_id", user?.id);
+  // Fetch profile (single source of truth)
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("xp, streak")
+    .eq("id", user.id)
+    .single();
 
-  const streakData = calculateStreak(interviews ?? []);
+  const streak = profile?.streak ?? 0;
+
+  let streakMessage = "Complete your first interview today!";
+
+  if (streak === 1) {
+    streakMessage = "Great start! Keep the momentum going.";
+  } else if (streak > 1) {
+    streakMessage = "You're on fire! Keep your streak alive.";
+  }
 
   return (
     <DashboardHome
       fullName={fullName}
-      streak={streakData.streak}
-      streakMessage={streakData.message}
+      streak={streak}
+      streakMessage={streakMessage}
     />
   );
 }

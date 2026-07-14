@@ -40,6 +40,13 @@ export default async function StatsGrid() {
     .limit(1)
     .single();
 
+  // Profile (XP)
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("xp")
+    .eq("id", user.id)
+    .single();
+
   const stats = [
     {
       title: "Mock Interviews",
@@ -55,8 +62,8 @@ export default async function StatsGrid() {
     },
     {
       title: "XP Earned",
-      value: String((interviewCount ?? 0) * 50),
-      subtitle: "50 XP per interview",
+      value: String(profile?.xp ?? 0),
+      subtitle: "Experience Points",
       icon: Sparkles,
     },
     {

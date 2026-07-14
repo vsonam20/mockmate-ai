@@ -1,7 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
 
-import { calculateStreak } from "@/lib/dashboard/streak";
-
 import PageHeader from "@/components/dashboard/PageHeader";
 import StatCard from "@/components/dashboard/StatCard";
 
@@ -34,31 +32,33 @@ export default async function ProfileOverview() {
     year: "numeric",
   });
 
-    // Total Interviews
-    const { count: interviewCount } = await supabase
-      .from("interviews")
-      .select("*", {
-        count: "exact",
-        head: true,
-      })
-      .eq("user_id", user.id);
+  // Fetch Profile
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("xp, streak")
+    .eq("id", user.id)
+    .single();
 
-    // Fetch interview dates for streak calculation
-    const { data: streakInterviews } = await supabase
-      .from("interviews")
-      .select("created_at")
-      .eq("user_id", user.id);
+  const xp = profile?.xp ?? 0;
+  const streak = profile?.streak ?? 0;
 
-    const streakData = calculateStreak(streakInterviews ?? []);
+  // Total Interviews
+  const { count: interviewCount } = await supabase
+    .from("interviews")
+    .select("*", {
+      count: "exact",
+      head: true,
+    })
+    .eq("user_id", user.id);
 
-    // Interview Progress Data
-    const { data: interviews } = await supabase
-      .from("interviews")
-      .select(`
-        role,
-        status
-      `)
-      .eq("user_id", user.id);
+  // Interview Progress Data
+  const { data: interviews } = await supabase
+    .from("interviews")
+    .select(`
+      role,
+      status
+    `)
+    .eq("user_id", user.id);
 
   // Latest Resume
   const { data: latestResume } = await supabase
@@ -70,8 +70,6 @@ export default async function ProfileOverview() {
     })
     .limit(1)
     .single();
-
-  const xp = (interviewCount ?? 0) * 50;
 
   const completedInterviews =
     interviews?.filter(
@@ -87,7 +85,8 @@ export default async function ProfileOverview() {
   const roleMap: Record<string, number> = {};
 
   interviews?.forEach((item) => {
-    roleMap[item.role] = (roleMap[item.role] ?? 0) + 1;
+    roleMap[item.role] =
+      (roleMap[item.role] ?? 0) + 1;
   });
 
   const favoriteRole =
@@ -97,7 +96,7 @@ export default async function ProfileOverview() {
 
   const initials = fullName
     .split(" ")
-    .map((word: string) => word[0])
+    .map((word: string) => word.charAt(0))
     .join("")
     .toUpperCase();
 
@@ -172,7 +171,7 @@ export default async function ProfileOverview() {
 
           <StatCard
             title="Current Streak"
-            value={`${streakData.streak}`}
+            value={String(streak)}
             subtitle="Interview streak"
             icon={Flame}
           />
